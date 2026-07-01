@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Справочник ИБ</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f0f4fa;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #dbe3ef;
+      --accent: #2563eb;
+      --accent-soft: #e8f0ff;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --success: #15803d;
+      --radius: 14px;
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar__inner {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      padding: 24px 0 36px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 18px;
+      height: fit-content;
+      position: sticky;
+      top: 18px;
+    }
+
+    .sidebar h2,
+    .content h2,
+    .content h3 {
+      margin: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .menu button {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    .menu button.active {
+      background: var(--accent-soft);
+      border-color: #bfd4ff;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .content {
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero {
+      padding: 22px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .toolbar {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 220px auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .field,
+    .toolbar button {
+      min-height: 44px;
+      border-radius: 10px;
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid var(--line);
+      padding: 0 12px;
+      background: #fff;
+    }
+
+    .toolbar button {
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      padding: 0 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .status {
+      padding: 0 18px 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .list-panel {
+      padding: 18px;
+    }
+
+    .list-panel h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--surface-2);
+      cursor: pointer;
+    }
+
+    .card.active {
+      outline: 2px solid #bfd4ff;
+      background: var(--accent-soft);
+    }
+
+    .card__top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .card__title {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .badge {
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge.danger {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .badge.warning {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+
+    .badge.success {
+      background: #dcfce7;
+      color: var(--success);
+    }
+
+    .badge.base {
+      background: #e5eefb;
+      color: #334155;
+    }
+
+    .card__meta,
+    .card__desc,
+    .detail__text,
+    .detail__subtext {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .detail {
+      padding: 18px;
+    }
+
+    .detail__header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 16px;
+    }
+
+    .detail__header h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .detail-box {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--surface-2);
+    }
+
+    .detail-box h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .detail-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .detail-actions button {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .detail-actions .edit-btn {
+      color: var(--accent);
+      border-color: #bfd4ff;
+      background: var(--accent-soft);
+    }
+
+    .detail-actions .delete-btn {
+      color: #fff;
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .helper-text {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .links button {
+      border: 1px solid #bfd4ff;
+      background: #fff;
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 50;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+      padding: 22px;
+    }
+
+    .modal h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .modal p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .modal-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .modal-actions button {
+      min-height: 42px;
+      border-radius: 10px;
+      padding: 0 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .modal-actions .primary {
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .modal-actions .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .auth-hint {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .news-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .news-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--surface-2);
+    }
+
+    .news-item__top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .news-item__title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .news-item__date {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .news-item__text {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .empty {
+      padding: 26px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    @media (max-width: 900px) {
+
+      .layout,
+      .detail-grid,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        Справочник ИБ
+        <small>Локальная система для специалистов в области информационной безопасности</small>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span id="adminStatus" style="font-size:14px; color:var(--muted);">Режим: пользователь</span>
+        <button id="openAuthButton" type="button"
+          style="min-height:40px; border:1px solid var(--line); border-radius:10px; background:#fff; padding:0 14px; cursor:pointer; font-weight:700;">Войти</button>
+        <button id="logoutButton" type="button" class="hidden"
+          style="min-height:40px; border:1px solid var(--line); border-radius:10px; background:#fff; padding:0 14px; cursor:pointer; font-weight:700;">Выйти</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <aside class="panel sidebar">
+      <h2>Разделы</h2>
+      <div class="menu" id="sectionMenu">
+        <button class="active" data-section="threat">Угрозы</button>
+        <button data-section="vulnerability">Уязвимости</button>
+        <button data-section="control">Меры защиты</button>
+        <button data-section="regulation">Нормативные документы</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="panel hero">
+        <h1>Интерактивный информационный справочник ИБ</h1>
+        <p>
+          Это упрощённый, но уже рабочий продукт. Система предназначена для локального использования,
+          поддерживает разделение по категориям, поиск по записям и просмотр связанной информации.
+          Структура сделана так, чтобы её можно было постепенно расширять в будущем.
+        </p>
+      </div>
+
+      <div class="panel hidden" id="adminPanel" style="padding:18px;">
+        <h2 style="margin:0 0 14px; font-size:20px;">Управление записями</h2>
+        <div class="toolbar" style="padding:0;">
+          <input class="field" id="newTitle" type="text" placeholder="Название записи" />
+          <input class="field" id="newCategory" type="text" placeholder="Категория" />
+          <button type="button" id="saveEntryButton">Сохранить запись</button>
+        </div>
+        <div class="toolbar" style="padding:12px 0 0; grid-template-columns: 1fr 220px 220px;">
+          <input class="field" id="newLevel" type="text" placeholder="Уровень / статус" />
+          <select class="field" id="newLevelClass">
+            <option value="base">Нейтральный</option>
+            <option value="warning">Предупреждение</option>
+            <option value="danger">Высокий риск</option>
+            <option value="success">Рекомендуемая мера</option>
+          </select>
+          <button type="button" id="exportButton" style="background:#0f766e;">Экспорт данных</button>
+        </div>
+        <div style="padding-top:12px; display:grid; gap:12px;">
+          <textarea class="field" id="newDescription" placeholder="Краткое описание"
+            style="min-height:84px; padding:12px;"></textarea>
+          <textarea class="field" id="newDetails" placeholder="Подробное описание"
+            style="min-height:110px; padding:12px;"></textarea>
+          <select class="field" id="newRelated" multiple style="min-height:150px; padding:10px;"></select>
+          <div class="helper-text">Связанные записи: удерживайте Ctrl, чтобы выбрать несколько пунктов.</div>
+        </div>
+        <div class="status" id="editorStatus" style="padding:12px 0 0;">Новая запись будет добавлена в текущий раздел.
+          Данные сохраняются локально в браузере.</div>
+        <div class="helper-text" id="editorMode">Режим: добавление новой записи.</div>
+      </div>
+
+      <div class="panel list-panel">
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
+          <h2 style="margin:0;">Новостная лента</h2>
+          <button id="addNewsBtn" class="hidden" type="button"
+            style="width:40px; height:40px; border-radius:50%; border:0; background:var(--accent); color:#fff; font-size:22px; cursor:pointer;">+</button>
+        </div>
+        <div id="newsForm" class="hidden" style="margin-bottom:16px; display:grid; gap:10px;">
+          <input class="field" id="newsTitle" type="text" placeholder="Заголовок" />
+          <input class="field" id="newsDate" type="text" placeholder="Дата" />
+          <textarea class="field" id="newsText" placeholder="Текст" style="min-height:80px; padding:10px;"></textarea>
+          <button id="saveNewsButton" type="button"
+            style="min-height:40px; background:var(--accent); color:#fff; border:0; border-radius:10px; cursor:pointer;">Сохранить</button>
+        </div>
+        <div class="status" id="newsStatus" style="padding:0 0 12px;">Новости доступны для просмотра. Добавление
+          новостей разрешено только администратору.</div>
+        <div class="news-list" id="newsContainer"></div>
+      </div>
+
+      <div class="panel list-panel">
+        <h2 style="margin-bottom:14px;">Быстрый доступ к разделам</h2>
+        <div class="cards" style="grid-template-columns: repeat(2, minmax(0, 1fr));" id="quickAccessPanel">
+          <div class="card" data-quick-section="threat">
+            <div class="card__title">Угрозы</div>
+            <div class="card__desc">Переход к каталогу угроз информационной безопасности.</div>
+          </div>
+          <div class="card" data-quick-section="vulnerability">
+            <div class="card__title">Уязвимости</div>
+            <div class="card__desc">Просмотр уязвимостей и их описаний.</div>
+          </div>
+          <div class="card" data-quick-section="control">
+            <div class="card__title">Меры защиты</div>
+            <div class="card__desc">Технические и организационные меры обеспечения безопасности.</div>
+          </div>
+          <div class="card" data-quick-section="regulation">
+            <div class="card__title">Нормативные документы</div>
+            <div class="card__desc">Федеральные законы и нормативная база по ИБ.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar">
+          <input class="field" id="searchInput" type="text" placeholder="Введите запрос" />
+          <select class="field" id="categoryFilter">
+            <option value="all">Все записи текущего раздела</option>
+          </select>
+          <button type="button" id="clearButton">Сбросить</button>
+        </div>
+        <div class="status" id="statusText">Показаны записи раздела «Угрозы».</div>
+      </div>
+
+      <div class="panel list-panel">
+        <h2 id="listTitle">Список записей</h2>
+        <div class="cards" id="cardsContainer"></div>
+      </div>
+
+      <div class="panel detail" id="detailContainer">
+        <div class="empty">Выберите запись из списка, чтобы открыть подробную карточку.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay hidden" id="authModal">
+    <div class="modal">
+      <h2>Авторизация</h2>
+      <p>Для доступа к функциям управления записями и новостями выполните вход под учётной записью администратора.</p>
+      <div class="modal-grid">
+        <input class="field" id="authLogin" type="text" placeholder="Логин" />
+        <input class="field" id="authPassword" type="password" placeholder="Пароль" />
+      </div>
+      <div class="auth-hint">Учебная учётная запись администратора используется для имитации системы авторизации в
+        локальном прототипе.</div>
+      <div class="modal-actions">
+        <button type="button" class="primary" id="authSubmitButton">Войти</button>
+        <button type="button" class="secondary" id="authCancelButton">Отмена</button>
+      </div>
+      <div class="status" id="authStatus" style="padding:12px 0 0;">Введите логин и пароль администратора.</div>
+    </div>
+  </div>
+
+  <script>
+    const USERS = [
+      { login: 'admin', password: 'admin123', role: 'admin' },
+      { login: 'user', password: 'user123', role: 'user' }
+    ];
+
+    const data = {
+        "news": [
+            {
+                "id": "news-1",
+                "title": "Обновление базы нормативных документов",
+                "date": "2026-03-25",
+                "text": "В локальный справочник добавлены актуализированные описания федеральных законов и карточки связей с разделами защиты информации."
+            },
+            {
+                "id": "news-2",
+                "title": "Расширение раздела мер защиты",
+                "date": "2026-03-24",
+                "text": "Раздел «Меры защиты» дополнен новыми карточками, связанными с угрозами нарушения доступности и контролем доступа."
+            }
+        ],
+        "threat": [
+            {
+                "id": "threat-1782934374801",
+                "title": "Supply Chain Attack",
+                "category": "Атаки на цепочку поставок",
+                "level": "Критический риск",
+                "levelClass": "danger",
+                "description": "Компрометация поставщиков программного обеспечения или оборудования с целью атаки конечной организации.",
+                "details": "Злоумышленники внедряют вредоносный код в программные продукты, библиотеки или обновления доверенного поставщика. В результате вредоносное программное обеспечение распространяется среди большого числа организаций.",
+                "related": []
+            },
+            {
+                "id": "threat-1782934330726",
+                "title": "Компрометация учетной записи",
+                "category": "Управление доступом",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Получение злоумышленником контроля над учетной записью пользователя.",
+                "details": "Компрометация возможна вследствие фишинга, утечки паролей, использования вредоносного ПО или повторного использования паролей на различных сервисах.",
+                "related": []
+            },
+            {
+                "id": "threat-1782934273760",
+                "title": "Атака \"Человек посередине\" (Man-in-the-Middle)",
+                "category": "Сетевые атаки",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Перехват и изменение передаваемой информации между двумя участниками обмена.",
+                "details": "Злоумышленник располагается между отправителем и получателем данных, получая возможность читать, изменять или подменять передаваемую информацию без ведома пользователей.\n\nСвязать с",
+                "related": []
+            },
+            {
+                "id": "threat-1782934163678",
+                "title": "Подбор паролей (Brute Force)",
+                "category": "Аутентификация",
+                "level": "Средний риск",
+                "levelClass": "danger",
+                "description": "Попытка подобрать пароль путем последовательного перебора различных комбинаций.",
+                "details": "Brute Force используется для получения несанкционированного доступа к учетным записям пользователей. Эффективность атаки значительно возрастает при использовании слабых паролей.",
+                "related": [
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "threat-1782934122394",
+                "title": "Межсайтовый скриптинг (XSS)",
+                "category": "Атаки на веб-приложения",
+                "level": "Средний риск",
+                "levelClass": "danger",
+                "description": "Внедрение вредоносного JavaScript-кода в веб-страницы.",
+                "details": "XSS позволяет злоумышленнику выполнять сценарии в браузере пользователя, похищать cookie-файлы, подменять содержимое страниц и получать доступ к пользовательским сеансам.",
+                "related": []
+            },
+            {
+                "id": "threat-1782934054159",
+                "title": "SQL-инъекция",
+                "category": "Атаки на веб-приложения",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Внедрение вредоносных SQL-запросов через пользовательский ввод.",
+                "details": "SQL-инъекция позволяет злоумышленнику выполнять произвольные запросы к базе данных. Последствиями могут быть изменение, удаление или кража информации, а также получение административного доступа к системе.",
+                "related": []
+            },
+            {
+                "id": "threat-1782918420591",
+                "title": "Программы-вымогатели",
+                "category": "Вредоносное программное обеспечение",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Вредоносные программы, шифрующие данные пользователя или организации с последующим требованием выкупа за восстановление доступа.",
+                "details": "Программы-вымогатели являются одной из наиболее опасных современных угроз. После проникновения в систему они могут зашифровать документы, базы данных и другие важные файлы, что приводит к нарушению деятельности организации. Дополнительно злоумышленники могут угрожать публикацией похищенных данных. Для защиты от данной угрозы необходимы резервное копирование, контроль вложений электронной почты, обновление программного обеспечения и обучение сотрудников.",
+                "related": []
+            },
+            {
+                "id": "threat-1782918250763",
+                "title": "APT-атака",
+                "category": "Целевые атаки",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Длительные и скрытые атаки на организации с целью получения доступа к конфиденциальной информации или нарушения работы информационных систем.",
+                "details": "Целевые атаки APT характеризуются высокой степенью подготовки, длительным присутствием злоумышленника в инфраструктуре и использованием нескольких этапов атаки. Как правило, такие атаки включают разведку, получение первичного доступа, закрепление в системе, повышение привилегий и последующее извлечение данных. Особую опасность APT представляют для государственных органов, объектов критической информационной инфраструктуры и крупных организаций.",
+                "related": []
+            },
+            {
+                "id": "threat-1",
+                "title": "Фишинг",
+                "category": "Социальная инженерия",
+                "level": "Средний риск",
+                "levelClass": "warning",
+                "description": "Получение конфиденциальных данных пользователя с использованием поддельных сайтов, писем и сообщений.",
+                "details": "Фишинг направлен на обман пользователя с целью получения логинов, паролей, кодов подтверждения или иной конфиденциальной информации. Злоумышленники маскируют сообщения под официальные уведомления банков, государственных сервисов, организаций или технической поддержки.",
+                "related": [
+                    "vulnerability-1",
+                    "control-1",
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "threat-2",
+                "title": "DDoS-атака",
+                "category": "Нарушение доступности",
+                "level": "Высокий риск",
+                "levelClass": "danger",
+                "description": "Создание избыточной сетевой нагрузки с целью сделать ресурс недоступным для легитимных пользователей.",
+                "details": "Опасна для веб-порталов, государственных сервисов и объектов, требующих постоянной доступности.",
+                "related": [
+                    "vulnerability-2",
+                    "control-2",
+                    "regulation-3"
+                ]
+            }
+        ],
+        "vulnerability": [
+            {
+                "id": "vulnerability-1782935106830",
+                "title": "Недостаточная защита облачной инфраструктуры",
+                "category": "Облачные технологии",
+                "level": "Средняя критичность",
+                "levelClass": "warning",
+                "description": "Ошибки конфигурации облачных сервисов создают риск несанкционированного доступа к данным.",
+                "details": "Неправильно настроенные политики доступа, открытые хранилища данных и использование небезопасных API значительно увеличивают вероятность утечки информации и компрометации облачной инфраструктуры.",
+                "related": [
+                    "regulation-1782933423721"
+                ]
+            },
+            {
+                "id": "vulnerability-1782935052908",
+                "title": "Недостаточный мониторинг событий безопасности",
+                "category": "Мониторинг безопасности",
+                "level": "Средняя критичность",
+                "levelClass": "warning",
+                "description": "Отсутствие централизованного контроля событий безопасности затрудняет своевременное обнаружение инцидентов.",
+                "details": "При отсутствии постоянного мониторинга злоумышленники могут длительное время находиться внутри информационной системы, не вызывая подозрений.",
+                "related": [
+                    "threat-1782918250763",
+                    "regulation-3"
+                ]
+            },
+            {
+                "id": "vulnerability-1782935007957",
+                "title": "Незащищенные каналы передачи данных",
+                "category": "Сетевая безопасность",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Передача данных без применения криптографической защиты создает риск их перехвата.",
+                "details": "Использование открытых каналов связи позволяет злоумышленникам перехватывать передаваемую информацию, изменять её или использовать для последующих атак.",
+                "related": [
+                    "threat-1782934273760"
+                ]
+            },
+            {
+                "id": "vulnerability-1782934970353",
+                "title": "Неправильная настройка прав доступа",
+                "category": "Разграничение доступа",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Предоставление пользователям избыточных прав повышает риск несанкционированного доступа.",
+                "details": "Избыточные полномочия позволяют злоумышленникам или внутренним нарушителям получить доступ к данным, которые не требуются для выполнения их должностных обязанностей.",
+                "related": [
+                    "threat-1782934330726",
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "vulnerability-1782934917639",
+                "title": "Недостаточная проверка входных данных",
+                "category": "Безопасность веб-приложений",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Отсутствие проверки пользовательского ввода позволяет внедрять вредоносные данные.",
+                "details": "Недостаточная фильтрация входных данных способствует успешному проведению SQL-инъекций, XSS-атак и других атак на веб-приложения.",
+                "related": [
+                    "threat-1782934122394",
+                    "threat-1782934054159",
+                    "regulation-1782933423721"
+                ]
+            },
+            {
+                "id": "vulnerability-1782934794672",
+                "title": "Использование устаревшего программного обеспечения",
+                "category": "Управление обновлениями",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Несвоевременная установка обновлений безопасности приводит к эксплуатации известных уязвимостей.",
+                "details": "Многие успешные атаки используют давно известные уязвимости, для которых производители уже выпустили исправления.",
+                "related": [
+                    "regulation-1782933455317"
+                ]
+            },
+            {
+                "id": "vulnerability-1782934708666",
+                "title": "Отсутствие резервного копирования",
+                "category": "Отказоустойчивость",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Отсутствие резервных копий делает невозможным быстрое восстановление информации после инцидентов.",
+                "details": "При заражении программами-вымогателями или повреждении данных организация может полностью потерять критически важную информацию.",
+                "related": [
+                    "threat-1782918420591",
+                    "regulation-1"
+                ]
+            },
+            {
+                "id": "vulnerability-1782934656066",
+                "title": "Недостаточная осведомленность пользователей",
+                "category": "Организационная безопасность",
+                "level": "Средняя критичность",
+                "levelClass": "warning",
+                "description": "Недостаточная подготовка сотрудников приводит к успешной реализации атак социальной инженерии.",
+                "details": "Сотрудники могут открывать вредоносные вложения, переходить по фишинговым ссылкам или сообщать конфиденциальную информацию злоумышленникам.",
+                "related": [
+                    "threat-1",
+                    "regulation-1"
+                ]
+            },
+            {
+                "id": "vulnerability-1",
+                "title": "Слабая парольная политика",
+                "category": "Управление доступом",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Использование простых, коротких или повторяющихся паролей значительно повышает вероятность несанкционированного доступа.",
+                "details": "Отсутствие требований к сложности паролей позволяет злоумышленникам успешно применять подбор паролей, словарные атаки и использовать данные из ранее произошедших утечек.",
+                "related": [
+                    "threat-1782934330726",
+                    "threat-1782934163678",
+                    "threat-1",
+                    "control-1",
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "vulnerability-2",
+                "title": "Отсутствие многофакторной аутентификации",
+                "category": "Аутентификация",
+                "level": "Высокая критичность",
+                "levelClass": "danger",
+                "description": "Использование только пароля значительно увеличивает риск компрометации учетных записей.",
+                "details": "При отсутствии дополнительного фактора аутентификации злоумышленнику достаточно получить пароль пользователя для получения полного доступа к информационной системе.",
+                "related": [
+                    "threat-1",
+                    "threat-2",
+                    "control-2",
+                    "regulation-2",
+                    "regulation-3"
+                ]
+            }
+        ],
+        "control": [
+            {
+                "id": "control-1782935735027",
+                "title": "Использование VPN и TLS",
+                "category": "Криптографическая защита",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Защита информации при передаче по сетям связи с использованием криптографических методов.",
+                "details": "VPN и TLS обеспечивают конфиденциальность, целостность и подлинность передаваемой информации, предотвращая ее перехват и изменение злоумышленниками.",
+                "related": [
+                    "threat-1782934273760",
+                    "vulnerability-1782935007957"
+                ]
+            },
+            {
+                "id": "control-1782935698893",
+                "title": "Разграничение прав доступа",
+                "category": "Управление доступом",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Предоставление пользователям только тех прав, которые необходимы для выполнения их должностных обязанностей.",
+                "details": "Принцип минимальных привилегий снижает риск несанкционированного доступа к информации и ограничивает последствия возможной компрометации учетной записи.",
+                "related": [
+                    "vulnerability-1782934970353",
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "control-1782935655228",
+                "title": "IDS/IPS",
+                "category": "Обнаружение вторжений",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Средства обнаружения и предотвращения сетевых атак.",
+                "details": "IDS выявляет признаки вторжения в информационную систему, а IPS не только обнаруживает, но и автоматически блокирует подозрительную активность.",
+                "related": [
+                    "threat-1782918250763",
+                    "threat-2",
+                    "vulnerability-1782935052908",
+                    "regulation-3"
+                ]
+            },
+            {
+                "id": "control-1782935606753",
+                "title": "SIEM-система",
+                "category": "Мониторинг безопасности",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Централизованный сбор, анализ и корреляция событий информационной безопасности.",
+                "details": "SIEM позволяет в режиме реального времени анализировать журналы событий, выявлять подозрительную активность и оперативно реагировать на инциденты.",
+                "related": [
+                    "threat-1782918250763",
+                    "vulnerability-1782935052908",
+                    "regulation-3"
+                ]
+            },
+            {
+                "id": "control-1782935518147",
+                "title": "Антивирусная защита",
+                "category": "Защита рабочих станций",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Обнаружение и блокирование вредоносного программного обеспечения.",
+                "details": "Антивирусные средства позволяют выявлять, изолировать и удалять вредоносные программы, а также предотвращать заражение информационных систем.",
+                "related": [
+                    "threat-1782918420591",
+                    "vulnerability-1782934794672",
+                    "regulation-1"
+                ]
+            },
+            {
+                "id": "control-1782935474002",
+                "title": "Web Application Firewall (WAF)",
+                "category": "Защита веб-приложений",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Средство защиты веб-приложений от наиболее распространенных атак.",
+                "details": "WAF анализирует HTTP-запросы и блокирует попытки эксплуатации уязвимостей веб-приложений, включая SQL-инъекции, XSS и другие виды атак.",
+                "related": [
+                    "threat-1782934122394",
+                    "threat-1782934054159",
+                    "regulation-1782933423721"
+                ]
+            },
+            {
+                "id": "control-1782935426515",
+                "title": "Межсетевой экран (Firewall)",
+                "category": "Сетевая защита",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Фильтрация входящего и исходящего сетевого трафика в соответствии с установленными правилами.",
+                "details": "Межсетевой экран контролирует сетевые соединения, предотвращает несанкционированный доступ и ограничивает распространение вредоносного трафика.",
+                "related": [
+                    "threat-1782934273760",
+                    "threat-2",
+                    "vulnerability-1782935007957",
+                    "regulation-1782933182935"
+                ]
+            },
+            {
+                "id": "control-1782935368820",
+                "title": "Своевременное обновление программного обеспечения",
+                "category": "Управление уязвимостями",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Регулярная установка обновлений безопасности для программного обеспечения.",
+                "details": "Обновление программного обеспечения позволяет своевременно устранять известные уязвимости, снижая вероятность их эксплуатации злоумышленниками.",
+                "related": [
+                    "threat-1782934054159",
+                    "threat-1782918250763",
+                    "vulnerability-1782934794672",
+                    "regulation-1782933455317"
+                ]
+            },
+            {
+                "id": "control-1782935328090",
+                "title": "Резервное копирование данных",
+                "category": "Обеспечение доступности",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Создание резервных копий информации для восстановления после инцидентов.",
+                "details": "Регулярное резервное копирование обеспечивает возможность восстановления информации после программных сбоев, атак программ-вымогателей или аппаратных отказов.",
+                "related": [
+                    "threat-1782918420591",
+                    "vulnerability-1782934708666",
+                    "regulation-1"
+                ]
+            },
+            {
+                "id": "control-1782935283626",
+                "title": "Обучение пользователей",
+                "category": "Организационная защита",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Повышение уровня знаний сотрудников по вопросам информационной безопасности.",
+                "details": "Регулярное обучение позволяет сотрудникам своевременно распознавать фишинговые сообщения, соблюдать требования политики безопасности и предотвращать инциденты, вызванные человеческим фактором.",
+                "related": [
+                    "threat-1",
+                    "regulation-1"
+                ]
+            },
+            {
+                "id": "control-1",
+                "title": "Многофакторная аутентификация",
+                "category": "Контроль доступа",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Использование дополнительного фактора проверки личности помимо пароля.",
+                "details": "Снижает риск компрометации учётной записи и особенно эффективна против фишинга.",
+                "related": [
+                    "threat-1",
+                    "vulnerability-1",
+                    "regulation-2"
+                ]
+            },
+            {
+                "id": "control-2",
+                "title": "Политика сложных паролей",
+                "category": "Управление доступом",
+                "level": "Рекомендуемая мера",
+                "levelClass": "success",
+                "description": "Установление требований к созданию и использованию надежных паролей.",
+                "details": "Политика сложных паролей предусматривает использование длинных уникальных паролей, регулярную смену учетных данных и запрет повторного использования ранее применявшихся паролей.",
+                "related": [
+                    "threat-1782934330726",
+                    "threat-1782934163678",
+                    "vulnerability-1",
+                    "regulation-2"
+                ]
+            }
+        ],
+        "regulation": [
+            {
+                "id": "regulation-1782933547141",
+                "title": "Менеджмент риска информационной безопасности",
+                "category": "ГОСТ Р ИСО/МЭК 27005",
+                "level": "Международный стандарт",
+                "levelClass": "base",
+                "description": "Определяет методы управления рисками информационной безопасности.",
+                "details": "Стандарт описывает процесс выявления, анализа, оценки и обработки рисков информационной безопасности, а также методы принятия решений по выбору необходимых мер защиты.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933455317",
+                "title": "Свод практик по мерам обеспечения информационной безопасности",
+                "category": "ГОСТ Р ИСО/МЭК 27002",
+                "level": "Международный стандарт",
+                "levelClass": "base",
+                "description": "Содержит практические рекомендации по применению мер обеспечения информационной безопасности.",
+                "details": "Стандарт представляет собой руководство по выбору и внедрению организационных и технических мер защиты информации, включая управление доступом, криптографическую защиту, обеспечение физической безопасности и реагирование на инциденты.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933423721",
+                "title": "Системы менеджмента информационной безопасности. Требования",
+                "category": "ГОСТ Р ИСО/МЭК 27001",
+                "level": "Международный стандарт",
+                "levelClass": "base",
+                "description": "Устанавливает требования к созданию, внедрению и совершенствованию системы менеджмента информационной безопасности.",
+                "details": "Стандарт определяет требования к разработке и функционированию системы менеджмента информационной безопасности, основанной на оценке рисков и постоянном совершенствовании процессов защиты информации.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933385593",
+                "title": "Требования к криптографической защите персональных данных",
+                "category": "Приказ ФСБ России № 378 от 10.07.2014",
+                "level": "Обязательный документ",
+                "levelClass": "base",
+                "description": "Устанавливает требования по обеспечению безопасности значимых объектов критической информационной инфраструктуры.",
+                "details": "Приказ определяет комплекс организационных и технических мер, необходимых для обеспечения безопасности объектов критической информационной инфраструктуры Российской Федерации, а также требования к построению систем защиты информации.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933334434",
+                "title": "Требования по обеспечению безопасности значимых объектов КИИ",
+                "category": "Приказ ФСТЭК России № 239 от 25.12.2017",
+                "level": "Обязательный документ",
+                "levelClass": "base",
+                "description": "Устанавливает требования по обеспечению безопасности значимых объектов критической информационной инфраструктуры.",
+                "details": "Приказ определяет комплекс организационных и технических мер, необходимых для обеспечения безопасности объектов критической информационной инфраструктуры Российской Федерации, а также требования к построению систем защиты информации.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933248502",
+                "title": "Меры по обеспечению безопасности персональных данных",
+                "category": "Приказ ФСТЭК России № 21 от 18.02.2013",
+                "level": "Обязательный документ",
+                "levelClass": "base",
+                "description": "Устанавливает состав организационных и технических мер по обеспечению безопасности персональных данных.",
+                "details": "Приказ определяет требования к защите персональных данных при их обработке в информационных системах персональных данных, включая порядок выбора мер защиты, требования к средствам защиты информации и организационным мероприятиям.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782933182935",
+                "title": "Требования о защите информации в государственных информационных системах",
+                "category": "Приказ ФСТЭК России № 117 от 11.04.2025",
+                "level": "Обязательный документ",
+                "levelClass": "base",
+                "description": "Устанавливает требования по защите информации в государственных информационных системах.",
+                "details": "Документ определяет порядок обеспечения безопасности государственных информационных систем, классификацию информационных систем, а также требования к организационным и техническим мерам защиты информации.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782932840677",
+                "title": "Доктрина информационной безопасности Российской Федерации",
+                "category": "Указ Президента РФ № 646 от 05.12.2016",
+                "level": "Стратегический документ",
+                "levelClass": "base",
+                "description": "Определяет государственную политику Российской Федерации в области обеспечения информационной безопасности.",
+                "details": "Доктрина устанавливает основные национальные интересы Российской Федерации в информационной сфере, определяет актуальные угрозы информационной безопасности, а также основные направления государственной политики по их предотвращению и нейтрализации.",
+                "related": []
+            },
+            {
+                "id": "regulation-1782932789670",
+                "title": "Конституция Российской Федерации",
+                "category": "Принята 12.12.1993",
+                "level": "Основной нормативный акт",
+                "levelClass": "base",
+                "description": "Закрепляет основные права граждан в сфере информации, неприкосновенности частной жизни и защиты персональных данных.",
+                "details": "Конституция Российской Федерации является основой правового регулирования информационных отношений. Она гарантирует право на неприкосновенность частной жизни, защиту персональных данных, тайну переписки, телефонных переговоров и иных сообщений, а также право свободно искать, получать, передавать и распространять информацию законными способами.",
+                "related": []
+            },
+            {
+                "id": "regulation-1",
+                "title": "149-ФЗ «Об информации, информационных технологиях и о защите информации»",
+                "category": "Федеральный закон № 149-ФЗ от 27.07.2006",
+                "level": "Базовый документ",
+                "levelClass": "base",
+                "description": "Устанавливает общие подходы к регулированию информации и вопросам её защиты.",
+                "details": "Используется как один из базовых документов при организации защиты информации.",
+                "related": []
+            },
+            {
+                "id": "regulation-2",
+                "title": "152-ФЗ «О персональных данных»",
+                "category": "Федеральный закон № 152-ФЗ от 27.07.2006",
+                "level": "Базовый документ",
+                "levelClass": "base",
+                "description": "Регулирует обработку и защиту персональных данных.",
+                "details": "Актуален при рассмотрении угроз, связанных с утечкой учётных данных и нарушением конфиденциальности.",
+                "related": [
+                    "threat-1",
+                    "vulnerability-1",
+                    "control-1"
+                ]
+            },
+            {
+                "id": "regulation-3",
+                "title": "187-ФЗ \"О безопасности критической информационной инфраструктуры Российской Федерации\"",
+                "category": "Федеральный закон № 187-ФЗ от 26.07.2017",
+                "level": "Профильный документ",
+                "levelClass": "base",
+                "description": "Устанавливает требования к защите значимых объектов КИИ.",
+                "details": "Применяется при анализе угроз доступности и устойчивости критически важных систем.",
+                "related": [
+                    "threat-2",
+                    "vulnerability-2",
+                    "control-2"
+                ]
+            }
+        ]
+    };
+
+    const names = {
+      threat: 'Угрозы',
+      vulnerability: 'Уязвимости',
+      control: 'Меры защиты',
+      regulation: 'Нормативные документы'
+    };
+
+    let currentSection = 'threat';
+    let currentId = null;
+    let currentUser = null;
+    let userRole = 'guest';
+    let editingId = null;
+    let editingNewsId = null;
+
+    const sectionMenu = document.getElementById('sectionMenu');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const detailContainer = document.getElementById('detailContainer');
+    const listTitle = document.getElementById('listTitle');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const clearButton = document.getElementById('clearButton');
+    const statusText = document.getElementById('statusText');
+    const openAuthButton = document.getElementById('openAuthButton');
+    const logoutButton = document.getElementById('logoutButton');
+    const adminStatus = document.getElementById('adminStatus');
+    const authModal = document.getElementById('authModal');
+    const authLogin = document.getElementById('authLogin');
+    const authPassword = document.getElementById('authPassword');
+    const authSubmitButton = document.getElementById('authSubmitButton');
+    const authCancelButton = document.getElementById('authCancelButton');
+    const authStatus = document.getElementById('authStatus');
+    const adminPanel = document.getElementById('adminPanel');
+    const addNewsBtn = document.getElementById('addNewsBtn');
+    const newsForm = document.getElementById('newsForm');
+    const newsContainer = document.getElementById('newsContainer');
+    const newsTitle = document.getElementById('newsTitle');
+    const newsDate = document.getElementById('newsDate');
+    const newsText = document.getElementById('newsText');
+    const saveNewsButton = document.getElementById('saveNewsButton');
+    const newsStatus = document.getElementById('newsStatus');
+    const quickAccessPanel = document.getElementById('quickAccessPanel');
+    const newTitle = document.getElementById('newTitle');
+    const newCategory = document.getElementById('newCategory');
+    const newLevel = document.getElementById('newLevel');
+    const newLevelClass = document.getElementById('newLevelClass');
+    const newDescription = document.getElementById('newDescription');
+    const newDetails = document.getElementById('newDetails');
+    const newRelated = document.getElementById('newRelated');
+    const saveEntryButton = document.getElementById('saveEntryButton');
+    const exportButton = document.getElementById('exportButton');
+    const editorStatus = document.getElementById('editorStatus');
+    const editorMode = document.getElementById('editorMode');
+
+    function saveToLocalStorage() {
+      localStorage.setItem('ib-guide-data', JSON.stringify(data));
+      localStorage.setItem('ib-guide-user', JSON.stringify({ currentUser, userRole }));
+    }
+
+    function loadFromLocalStorage() {
+      const savedData = localStorage.getItem('ib-guide-data');
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          ['news', 'threat', 'vulnerability', 'control', 'regulation'].forEach(section => {
+            if (Array.isArray(parsed[section])) data[section] = parsed[section];
+          });
+        } catch (error) {
+          console.error('Ошибка загрузки данных', error);
+        }
+      }
+
+      const savedUser = localStorage.getItem('ib-guide-user');
+      if (savedUser) {
+        try {
+          const parsed = JSON.parse(savedUser);
+          currentUser = parsed.currentUser || null;
+          userRole = parsed.userRole || 'guest';
+        } catch (error) {
+          currentUser = null;
+          userRole = 'guest';
+        }
+      }
+    }
+
+    function getAllItems() {
+      return [...data.threat, ...data.vulnerability, ...data.control, ...data.regulation];
+    }
+
+    function getItemById(id) {
+      return getAllItems().find(item => item.id === id) || null;
+    }
+
+    function getSectionById(id) {
+      return Object.keys(names).find(section => data[section].some(entry => entry.id === id));
+    }
+
+    function updateRelatedOptions(selectedIds = []) {
+      if (!newRelated) return;
+      newRelated.innerHTML = '';
+      getAllItems().forEach(item => {
+        if (item.id === editingId) return;
+        const section = getSectionById(item.id);
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = `${names[section]} — ${item.title}`;
+        option.selected = selectedIds.includes(item.id);
+        newRelated.appendChild(option);
+      });
+    }
+
+    function getSelectedRelated() {
+      return Array.from(newRelated.selectedOptions).map(option => option.value);
+    }
+
+    function updateAdminUI() {
+      adminStatus.textContent = userRole === 'admin' ? 'Режим: администратор' : userRole === 'user' ? 'Режим: пользователь' : 'Режим: гость';
+      openAuthButton.classList.toggle('hidden', !!currentUser);
+      logoutButton.classList.toggle('hidden', !currentUser);
+      adminPanel.classList.toggle('hidden', userRole !== 'admin');
+      addNewsBtn.classList.toggle('hidden', userRole !== 'admin');
+      if (userRole !== 'admin') newsForm.classList.add('hidden');
+      if (userRole === 'admin') updateRelatedOptions();
+    }
+
+    function openAuthModal() {
+      authModal.classList.remove('hidden');
+      authLogin.value = '';
+      authPassword.value = '';
+      authStatus.textContent = 'Введите логин и пароль.';
+      setTimeout(() => authLogin.focus(), 0);
+    }
+
+    function closeAuthModal() {
+      authModal.classList.add('hidden');
+    }
+
+    function clearEditor() {
+      newTitle.value = '';
+      newCategory.value = '';
+      newLevel.value = '';
+      newDescription.value = '';
+      newDetails.value = '';
+      newLevelClass.value = 'base';
+      editingId = null;
+      editorMode.textContent = 'Режим: добавление новой записи.';
+      saveEntryButton.textContent = 'Сохранить запись';
+      updateRelatedOptions();
+    }
+
+    function clearNewsEditor() {
+      newsTitle.value = '';
+      newsDate.value = '';
+      newsText.value = '';
+      editingNewsId = null;
+      saveNewsButton.textContent = 'Сохранить';
+    }
+
+    function renderNews() {
+      newsContainer.innerHTML = '';
+      if (!data.news.length) {
+        newsContainer.innerHTML = '<div class="empty">Новостная лента пока не заполнена.</div>';
+        return;
+      }
+
+      data.news.forEach(item => {
+        const node = document.createElement('div');
+        node.className = 'news-item';
+        node.innerHTML = `
+          <div class="news-item__top">
+            <div class="news-item__title">${item.title}</div>
+            <div class="news-item__date">${item.date}</div>
+          </div>
+          <div class="news-item__text">${item.text}</div>
+          ${userRole === 'admin' ? `<div class="detail-actions" style="margin-top:12px;"><button type="button" class="edit-btn" data-action="edit-news" data-id="${item.id}">Редактировать</button><button type="button" class="delete-btn" data-action="delete-news" data-id="${item.id}">Удалить</button></div>` : ''}
+        `;
+        newsContainer.appendChild(node);
+      });
+    }
+
+    function renderCategoryFilter() {
+      const categories = [...new Set(data[currentSection].map(item => item.category))];
+      categoryFilter.innerHTML = '<option value="all">Все записи текущего раздела</option>';
+      categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+      });
+    }
+
+    function getFilteredItems() {
+      const query = searchInput.value.trim().toLowerCase();
+      const category = categoryFilter.value;
+      return data[currentSection].filter(item => {
+        const haystack = `${item.title} ${item.category} ${item.description} ${item.details}`.toLowerCase();
+        const matchesQuery = query ? haystack.includes(query) : true;
+        const matchesCategory = category === 'all' ? true : item.category === category;
+        return matchesQuery && matchesCategory;
+      });
+    }
+
+    function renderCardsSelectionOnly() {
+      [...cardsContainer.children].forEach(card => {
+        const id = card.dataset.id;
+        card.classList.toggle('active', id === currentId);
+      });
+    }
+
+    function renderDetail(item) {
+      const relatedItems = (item.related || []).map(getItemById).filter(Boolean);
+      const adminActions = userRole === 'admin'
+        ? `<div class="detail-actions"><button type="button" class="edit-btn" id="editCurrentButton">Редактировать</button><button type="button" class="delete-btn" id="deleteCurrentButton">Удалить</button></div>`
+        : '';
+
+      detailContainer.innerHTML = `
+        <div class="detail__header">
+          <div>
+            <h2>${item.title}</h2>
+            <div class="detail__subtext">${item.category}</div>
+          </div>
+          <span class="badge ${item.levelClass}">${item.level}</span>
+        </div>
+        <div class="detail__text">${item.details}</div>
+        ${adminActions}
+        <div class="detail-grid">
+          <div class="detail-box">
+            <h3>Краткое описание</h3>
+            <div class="detail__text">${item.description}</div>
+          </div>
+          <div class="detail-box">
+            <h3>Связанные записи</h3>
+            <div class="links" id="relatedLinks"></div>
+          </div>
+        </div>
+      `;
+
+      const relatedLinks = document.getElementById('relatedLinks');
+      if (!relatedItems.length) {
+        relatedLinks.innerHTML = '<div class="detail__subtext">Связанные записи отсутствуют.</div>';
+      } else {
+        relatedItems.forEach(related => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = related.title;
+          button.addEventListener('click', () => {
+            const targetSection = Object.keys(names).find(section => data[section].some(entry => entry.id === related.id));
+            if (!targetSection) return;
+            currentSection = targetSection;
+            currentId = related.id;
+            updateSectionButtons();
+            renderCategoryFilter();
+            searchInput.value = '';
+            categoryFilter.value = 'all';
+            renderCards();
+          });
+          relatedLinks.appendChild(button);
+        });
+      }
+
+      if (userRole === 'admin') {
+        document.getElementById('editCurrentButton').addEventListener('click', () => startEdit(item));
+        document.getElementById('deleteCurrentButton').addEventListener('click', deleteCurrentItem);
+      }
+    }
+
+    function renderCards() {
+      const items = getFilteredItems();
+      cardsContainer.innerHTML = '';
+      listTitle.textContent = names[currentSection];
+      statusText.textContent = `Найдено записей: ${items.length}. Текущий раздел: «${names[currentSection]}».`;
+
+      if (!items.length) {
+        cardsContainer.innerHTML = '<div class="empty">По заданным условиям записи не найдены.</div>';
+        detailContainer.innerHTML = '<div class="empty">Выберите другой раздел или измените параметры поиска.</div>';
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = item.id;
+        card.innerHTML = `
+          <div class="card__top">
+            <div class="card__title">${item.title}</div>
+            <span class="badge ${item.levelClass}">${item.level}</span>
+          </div>
+          <div class="card__meta">${item.category}</div>
+          <div class="card__desc">${item.description}</div>
+        `;
+        card.addEventListener('click', () => {
+          currentId = item.id;
+          renderCardsSelectionOnly();
+          renderDetail(item);
+        });
+        cardsContainer.appendChild(card);
+      });
+
+      const selected = items.find(item => item.id === currentId) || items[0];
+      currentId = selected.id;
+      renderCardsSelectionOnly();
+      renderDetail(selected);
+    }
+
+    function updateSectionButtons() {
+      sectionMenu.querySelectorAll('button').forEach(button => {
+        button.classList.toggle('active', button.dataset.section === currentSection);
+      });
+    }
+
+    function startEdit(item) {
+      if (userRole !== 'admin') return;
+      newTitle.value = item.title;
+      newCategory.value = item.category;
+      newLevel.value = item.level;
+      newDescription.value = item.description;
+      newDetails.value = item.details;
+      newLevelClass.value = item.levelClass || 'base';
+      editingId = item.id;
+      updateRelatedOptions(item.related || []);
+      editorMode.textContent = 'Режим: редактирование выбранной записи.';
+      saveEntryButton.textContent = 'Обновить запись';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteCurrentItem() {
+      if (userRole !== 'admin') return;
+      if (!currentId) return;
+      const index = data[currentSection].findIndex(item => item.id === currentId);
+      if (index === -1) return;
+      if (!window.confirm('Удалить выбранную запись?')) return;
+      data[currentSection].splice(index, 1);
+      getAllItems().forEach(item => {
+        item.related = (item.related || []).filter(id => id !== currentId);
+      });
+      currentId = null;
+      saveToLocalStorage();
+      renderCategoryFilter();
+      categoryFilter.value = 'all';
+      renderCards();
+      clearEditor();
+      editorStatus.textContent = 'Запись удалена.';
+    }
+
+    sectionMenu.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-section]');
+      if (!button) return;
+      currentSection = button.dataset.section;
+      currentId = null;
+      updateSectionButtons();
+      searchInput.value = '';
+      renderCategoryFilter();
+      categoryFilter.value = 'all';
+      renderCards();
+    });
+
+    searchInput.addEventListener('input', renderCards);
+    categoryFilter.addEventListener('change', renderCards);
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      categoryFilter.value = 'all';
+      renderCards();
+    });
+
+    openAuthButton.addEventListener('click', openAuthModal);
+    authCancelButton.addEventListener('click', closeAuthModal);
+
+    authModal.addEventListener('click', (event) => {
+      if (event.target === authModal) closeAuthModal();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !authModal.classList.contains('hidden')) {
+        closeAuthModal();
+      }
+    });
+
+    authSubmitButton.addEventListener('click', () => {
+      const login = authLogin.value.trim();
+      const password = authPassword.value.trim();
+      const foundUser = USERS.find(u => u.login === login && u.password === password);
+      if (!foundUser) {
+        authStatus.textContent = 'Неверный логин или пароль.';
+        return;
+      }
+      currentUser = foundUser.login;
+      userRole = foundUser.role;
+      saveToLocalStorage();
+      updateAdminUI();
+      renderNews();
+      closeAuthModal();
+      editorStatus.textContent = `Вход выполнен: ${userRole === 'admin' ? 'администратор' : 'пользователь'}.`;
+      newsStatus.textContent = userRole === 'admin' ? 'Доступно управление новостями.' : 'Новости доступны для просмотра.';
+    });
+
+    authPassword.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') authSubmitButton.click();
+    });
+
+    logoutButton.addEventListener('click', () => {
+      currentUser = null;
+      userRole = 'guest';
+      saveToLocalStorage();
+      updateAdminUI();
+      renderNews();
+      clearEditor();
+      clearNewsEditor();
+      editorStatus.textContent = 'Выход выполнен.';
+      newsStatus.textContent = 'Новости доступны для просмотра. Добавление новостей разрешено только администратору.';
+    });
+
+    saveEntryButton.addEventListener('click', () => {
+      if (userRole !== 'admin') {
+        editorStatus.textContent = 'Редактирование и добавление записей доступно только администратору.';
+        return;
+      }
+      const title = newTitle.value.trim();
+      const category = newCategory.value.trim();
+      const level = newLevel.value.trim();
+      const description = newDescription.value.trim();
+      const details = newDetails.value.trim();
+      if (!title || !category || !level || !description || !details) {
+        editorStatus.textContent = 'Заполните все поля перед сохранением записи.';
+        return;
+      }
+
+      if (editingId) {
+        const item = data[currentSection].find(entry => entry.id === editingId);
+        if (!item) return;
+        item.title = title;
+        item.category = category;
+        item.level = level;
+        item.levelClass = newLevelClass.value;
+        item.description = description;
+        item.details = details;
+        item.related = getSelectedRelated();
+        currentId = item.id;
+        editorStatus.textContent = 'Запись успешно обновлена.';
+      } else {
+        const entry = {
+          id: `${currentSection}-${Date.now()}`,
+          title,
+          category,
+          level,
+          levelClass: newLevelClass.value,
+          description,
+          details,
+          related: getSelectedRelated()
+        };
+        data[currentSection].unshift(entry);
+        currentId = entry.id;
+        editorStatus.textContent = 'Новая запись успешно сохранена.';
+      }
+
+      saveToLocalStorage();
+      renderCategoryFilter();
+      categoryFilter.value = 'all';
+      renderCards();
+      clearEditor();
+    });
+
+    exportButton.addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'ib-guide-data.json';
+      link.click();
+      URL.revokeObjectURL(link.href);
+      editorStatus.textContent = 'Данные экспортированы в JSON-файл.';
+    });
+
+    addNewsBtn.addEventListener('click', () => {
+      if (userRole !== 'admin') return;
+      newsForm.classList.toggle('hidden');
+    });
+
+    saveNewsButton.addEventListener('click', () => {
+      if (userRole !== 'admin') {
+        newsStatus.textContent = 'Добавление и редактирование новостей доступно только администратору.';
+        return;
+      }
+      const title = newsTitle.value.trim();
+      const date = newsDate.value.trim();
+      const text = newsText.value.trim();
+      if (!title || !date || !text) {
+        newsStatus.textContent = 'Заполните все поля новости.';
+        return;
+      }
+
+      if (editingNewsId) {
+        const item = data.news.find(news => news.id === editingNewsId);
+        if (!item) return;
+        item.title = title;
+        item.date = date;
+        item.text = text;
+        newsStatus.textContent = 'Новость обновлена.';
+      } else {
+        data.news.unshift({ id: `news-${Date.now()}`, title, date, text });
+        newsStatus.textContent = 'Новость добавлена.';
+      }
+
+      saveToLocalStorage();
+      renderNews();
+      clearNewsEditor();
+      newsForm.classList.add('hidden');
+    });
+
+    newsContainer.addEventListener('click', (event) => {
+      const editBtn = event.target.closest('[data-action="edit-news"]');
+      const deleteBtn = event.target.closest('[data-action="delete-news"]');
+
+      if (editBtn) {
+        const item = data.news.find(news => news.id === editBtn.dataset.id);
+        if (!item) return;
+        newsTitle.value = item.title;
+        newsDate.value = item.date;
+        newsText.value = item.text;
+        editingNewsId = item.id;
+        saveNewsButton.textContent = 'Обновить';
+        newsForm.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (deleteBtn) {
+        if (!window.confirm('Удалить выбранную новость?')) return;
+        data.news = data.news.filter(news => news.id !== deleteBtn.dataset.id);
+        saveToLocalStorage();
+        renderNews();
+        clearNewsEditor();
+        newsStatus.textContent = 'Новость удалена.';
+      }
+    });
+
+    quickAccessPanel.addEventListener('click', (event) => {
+      const card = event.target.closest('[data-quick-section]');
+      if (!card) return;
+      currentSection = card.dataset.quickSection;
+      currentId = null;
+      updateSectionButtons();
+      searchInput.value = '';
+      renderCategoryFilter();
+      categoryFilter.value = 'all';
+      renderCards();
+      listTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Данные встроены прямо в файл, чтобы GitHub Pages показывал заполненный справочник на всех устройствах.
+    // loadFromLocalStorage();
+    updateAdminUI();
+    renderNews();
+    renderCategoryFilter();
+    renderCards();
+  </script>
+</body>
+
+</html>
